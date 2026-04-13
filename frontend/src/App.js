@@ -5,7 +5,7 @@ function App() {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
-  // Fetch jobs
+
   const fetchJobs = () => {
     fetch("http://localhost:5000/api/jobs")
       .then((res) => res.json())
@@ -17,9 +17,7 @@ function App() {
     fetchJobs();
   }, []);
 
-  // Add job
   const addJob = () => {
-    // ✅ Validation
     if (!company || !role || !status) {
       alert("Please fill all fields");
       return;
@@ -32,26 +30,20 @@ function App() {
       },
       body: JSON.stringify({ company, role, status })
     })
-      .then((res) => res.json())
       .then(() => {
-        fetchJobs(); // refresh list
+        fetchJobs();
         setCompany("");
         setRole("");
         setStatus("");
-      })
-      .catch((err) => console.error(err));
+      });
   };
 
-  // Delete job
   const deleteJob = (id) => {
     fetch(`http://localhost:5000/api/jobs/${id}`, {
       method: "DELETE"
-    })
-      .then(() => fetchJobs())
-      .catch((err) => console.error(err));
+    }).then(() => fetchJobs());
   };
 
-  // Update status
   const updateStatus = (id, newStatus) => {
     fetch(`http://localhost:5000/api/jobs/${id}`, {
       method: "PUT",
@@ -59,76 +51,129 @@ function App() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ status: newStatus })
-    })
-      .then(() => fetchJobs())
-      .catch((err) => console.error(err));
+    }).then(() => fetchJobs());
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Job Tracker</h1>
+    <div style={styles.container}>
+      <h1 style={styles.title}>🚀 Job Tracker</h1>
 
       {/* FORM */}
-      <div style={{ marginBottom: "20px" }}>
+      <div style={styles.form}>
         <input
+          style={styles.input}
           placeholder="Company"
           value={company}
           onChange={(e) => setCompany(e.target.value)}
-          style={{ marginRight: "10px", padding: "5px" }}
         />
         <input
+          style={styles.input}
           placeholder="Role"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          style={{ marginRight: "10px", padding: "5px" }}
         />
         <select
+          style={styles.input}
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          style={{ marginRight: "10px", padding: "5px" }}
         >
           <option value="">Select Status</option>
-          <option value="applied">applied</option>
-          <option value="interview">interview</option>
-          <option value="rejected">rejected</option>
+          <option value="applied">Applied</option>
+          <option value="interview">Interview</option>
+          <option value="rejected">Rejected</option>
         </select>
 
-        <button onClick={addJob}>Add Job</button>
+        <button style={styles.addBtn} onClick={addJob}>
+          Add Job
+        </button>
       </div>
 
       {/* JOB LIST */}
-      {jobs.length === 0 ? (
-        <p>No jobs found</p>
-      ) : (
-        jobs.map((job) => (
-          <div
-            key={job.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              margin: "10px",
-              padding: "10px"
-            }}
-          >
-            <h3>{job.company}</h3>
-            <p><b>Role:</b> {job.role}</p>
+      <div style={styles.grid}>
+        {jobs.map((job) => (
+          <div key={job.id} style={styles.card}>
+            <h2>{job.company}</h2>
+            <p>{job.role}</p>
 
             <select
+              style={styles.status}
               value={job.status}
               onChange={(e) => updateStatus(job.id, e.target.value)}
             >
-              <option value="applied">applied</option>
-              <option value="interview">interview</option>
-              <option value="rejected">rejected</option>
+              <option value="applied">Applied</option>
+              <option value="interview">Interview</option>
+              <option value="rejected">Rejected</option>
             </select>
 
-            <br /><br />
-
-            <button onClick={() => deleteJob(job.id)}>Delete</button>
+            <button
+              style={styles.deleteBtn}
+              onClick={() => deleteJob(job.id)}
+            >
+              Delete
+            </button>
           </div>
-        ))
-      )}
+        ))}
+      </div>
     </div>
   );
 }
+
+/* 🎨 STYLES */
+const styles = {
+  container: {
+    maxWidth: "900px",
+    margin: "auto",
+    padding: "20px",
+    fontFamily: "Arial"
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "20px"
+  },
+  form: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px"
+  },
+  input: {
+    padding: "8px",
+    flex: 1,
+    borderRadius: "5px",
+    border: "1px solid #ccc"
+  },
+  addBtn: {
+    padding: "8px 15px",
+    background: "#4CAF50",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "15px"
+  },
+  card: {
+    padding: "15px",
+    borderRadius: "10px",
+    background: "#f9f9f9",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+  },
+  status: {
+    marginTop: "10px",
+    padding: "5px",
+    width: "100%"
+  },
+  deleteBtn: {
+    marginTop: "10px",
+    padding: "6px",
+    background: "red",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }
+};
+
 export default App;
