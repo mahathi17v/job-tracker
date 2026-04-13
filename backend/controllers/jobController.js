@@ -64,3 +64,34 @@ exports.getJobs = (req, res) => {
     res.json(results);
   });
 };
+
+exports.updateJobStatus = (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const query = "UPDATE jobs SET status = ? WHERE id = ?";
+
+  db.query(query, [status, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.json({ message: "Job status updated" });
+  });
+};
+
+exports.deleteJob = (req, res) => {
+  const { id } = req.params;
+
+  const query = "DELETE FROM jobs WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.json({ message: "Job deleted successfully" });
+  });
+};
