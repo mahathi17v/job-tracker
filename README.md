@@ -148,6 +148,6 @@ http://localhost:3000
 
 ---
 
-## 📸 Screenshots
+<!-- ## 📸 Screenshots -->
 
 <!-- (Add your screenshots here) -->
